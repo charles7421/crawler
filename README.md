@@ -4,7 +4,7 @@ Teste de Crawler
 
 # Dependencies
 
-Cheerio (https://github.com/cheeriojs/cheerio)
-request (https://github.com/request/request)
+__&#8226; Cheerio (https://github.com/cheeriojs/cheerio)__
+__&#8226; request (https://github.com/request/request)__
 
 
