@@ -1,0 +1,21 @@
+{
+  "name": "mini-crawler",
+  "version": "0.0.1",
+  "description": "Mini Crawler para testes de performance ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "crawler",
+    "node.js",
+    "cheerio",
+    "request"
+  ],
+  "author": "Charles Garcia",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "request": "^2.70.0"
+  }
+}
