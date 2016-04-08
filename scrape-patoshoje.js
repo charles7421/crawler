@@ -35,10 +35,15 @@ request(site, function(error, response, body) {
     $('ul.ui-tabs-nav > li.ui-tabs-nav-item').each(function( index ) {
       var titulo = $(this).find('a').attr('title');
       var link = $(this).find('a').attr('onclick');
-      var resumo;
       link = link.substring(link.indexOf('(')+2, link.lastIndexOf(')')-1);
+      resumir(link, titulo);      
+    })   
+    callback();
+  };
 
-      request(link, function(error, response, body) {
+  function resumir(linkAVerificar, titulo) {
+    var resumo;
+    request(linkAVerificar, function(error, response, body) {
         if (error) {
           console.log("Error: " + error);
         }
@@ -46,11 +51,9 @@ request(site, function(error, response, body) {
         $$('section.container-detalhada').each(function(index) {
            resumo = $$(this).find('p.sintese').text().trim();
         });
-        escreve('\n' + titulo + '\n' + link + '\n' + resumo + '\n');
+        escreve('\n' + titulo + '\n' + linkAVerificar + '\n' + resumo + '\n');
       });
-    })
-    callback();
-  };
+  }
 
   function ultimasNoticias() {
     escreve('\n' + "Últimas notícias" + '\n');
@@ -61,10 +64,6 @@ request(site, function(error, response, body) {
         escreve('\n' + titulo + '\n' + link + '\n');
       });
   } 
-
   inicio();
-  destaques((ultimasNoticias) => {
-      console.log('Arquivo patoshoje.txt criado.');
-  });
-  
+  destaques(ultimasNoticias); 
 });
