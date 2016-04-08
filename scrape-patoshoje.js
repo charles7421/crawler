@@ -1,6 +1,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var fs = require('fs');
+var async = require("async");
 
 var site = "http://www.patoshoje.com.br";
 
@@ -23,22 +24,24 @@ request(site, function(error, response, body) {
   }  
 
   function inicio() {
+    console.time("Execução paralela");
     $ = cheerio.load(body);
     var keywords = "Keywords: " + $('meta[name="keywords"]').attr('content') + "\n";
     var description = "Description: " + $('meta[name="description"]').attr('content');
-    apagarArquivo('patoshoje.txt');
-    escreve(site + '\n' + '\n' + "Meta tags" + '\n' + '\n' + keywords + '\n' + description + '\n' + '\n');
+    //apagarArquivo('patoshoje.txt');
+    console.log(site + '\n' + '\n' + "Meta tags" + '\n' + '\n' + keywords + '\n' + description + '\n');
+    //escreve(site + '\n' + '\n' + "Meta tags" + '\n' + '\n' + keywords + '\n' + description + '\n' + '\n');
   }
 
   function destaques(callback) {
-    escreve('\n' + "Destaques" + '\n');
+    console.log('\n' + "Destaques" + '\n');
+    //escreve('\n' + "Destaques" + '\n');
     $('ul.ui-tabs-nav > li.ui-tabs-nav-item').each(function( index ) {
       var titulo = $(this).find('a').attr('title');
       var link = $(this).find('a').attr('onclick');
       link = link.substring(link.indexOf('(')+2, link.lastIndexOf(')')-1);
-      resumir(link, titulo);      
-    })   
-    callback();
+      resumir(link, titulo);
+    })
   };
 
   function resumir(linkAVerificar, titulo) {
@@ -51,19 +54,35 @@ request(site, function(error, response, body) {
         $$('section.container-detalhada').each(function(index) {
            resumo = $$(this).find('p.sintese').text().trim();
         });
-        escreve('\n' + titulo + '\n' + linkAVerificar + '\n' + resumo + '\n');
+        console.log('\n' + titulo + '\n' + linkAVerificar + '\n' + resumo + '\n');
+        //escreve('\n' + titulo + '\n' + linkAVerificar + '\n' + resumo + '\n');
       });
   }
 
-  function ultimasNoticias() {
-    escreve('\n' + "Últimas notícias" + '\n');
+  function ultimasNoticias(callback) {
+    console.log('\n' + "Últimas notícias" + '\n');
+    //escreve('\n' + "Últimas notícias" + '\n');
      $('div#box_last_news > div.notice').each(function( index ) {    
         var titulo = $(this).find('a').attr('title');
         var link = $(this).find('a').attr('href');
         link = site + link;
-        escreve('\n' + titulo + '\n' + link + '\n');
+        console.log('\n' + titulo + '\n' + link + '\n');
       });
+     callback();
   } 
-  inicio();
-  destaques(ultimasNoticias); 
+
+  async.parallel([
+    function(callback) {
+      inicio(function() {
+        callback();
+      });
+    },
+    function(callback) {
+      ultimasNoticias(destaques, function() {
+        callback();
+      });
+    }
+  ], function() {
+    console.timeEnd("Execução paralela");
+  });
 });
